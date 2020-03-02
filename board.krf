@@ -18,10 +18,15 @@
 (arg1Isa directionToFace 2DNonDiagonal)
 (comment directionToFace "(direcionToFace ?direction) says that PacPerson should next face ?direction")
 
-(isa pellet Predicate)
-(arity pellet 1)
-(arg1Isa pellet 2DNonDiagonal)
-(comment pellet "(pellet ?direction) says that there is a pellet at ?direction")
+(isa nearestPellet Predicate)
+(arity nearestPellet 1)
+(arg1Isa nearestPellet 2DNonDiagonal)
+(comment nearestPellet "(nearestPellet ?direction) says that the nearest pellet is at ?direction. If multiple pellets are the same distance away, there will be multiple of these.")
+
+(isa nearestGhost Predicate)
+(arity nearestGhost 1)
+(arg1Isa nearestGhost 2DNonDiagonal)
+(comment nearestGhost "(nearestGhost ?direction) says that the nearest ghost is at ?direction. If multiple ghosts are the same distance away, there will be multiple of these.")
 
 (isa noSurroundingPellets Predicate)
 (arity noSurroundingPellets 0)
@@ -29,15 +34,67 @@
 
 
 (<== (noSurroundingPellets)
-        (uninferredSentence (pellet Up))
-        (uninferredSentence (pellet Right))
-        (uninferredSentence (pellet Down))
-        (uninferredSentence (pellet Left))
+        (uninferredSentence (nearestPellet Up))
+        (uninferredSentence (nearestPellet Right))
+        (uninferredSentence (nearestPellet Down))
+        (uninferredSentence (nearestPellet Left))
 )
-;; if there's a pellet, face it
+
+(isa noAdjacentGhosts Predicate)
+(arity noAdjacentGhosts 0)
+(comment noAdjacentGhosts "(noAdjacentGhosts) says there are no ghosts around PacPerson")
+
+(<== (noAdjacentGhosts)
+        (uninferredSentence (ghost Up))
+        (uninferredSentence (ghost Right))
+        (uninferredSentence (ghost Down))
+        (uninferredSentence (ghost Left))
+)
+
+(isa multipleNearestPellets Predicate)
+(arity multipleNearestPellets 0)
+(comment multipleNearestPellets "(multipleNearestPellets) says there are multiple equidistant nearest pellets")
+
+(<== (multipleNearestPellets)
+        (nearestPellet ?directionA)
+        (nearestPellet ?directionB)
+        (different ?directionA ?directionB)
+)
+
+;; THERE IS A GHOST NEXT TO YOU
+;; face an unblocked direction where there is no ghost
 (<== (directionToFace ?direction)
-        (pellet ?direction)
+        (not (noAdjacentGhosts))
+        (isa ?direction 2DNonDiagonal)
+        (uninferredSentence (blocked ?direction)
+        (uninferredSentence (ghost ?direction))
 )
+
+
+;; THERE IS NO GHOST NEXT TO YOU
+
+;; there is only one nearest pellet and that direction is not blocked. face it.
+(<== (directionToFace ?direction)
+        (noAdjacentGhosts)
+        (not (multipleNearestPellets))
+        (nearestPellet ?direction)
+        (uninferredSentence (blocked ?direction))
+)
+
+;; there are multiple nearest pellets
+;; pick an unblocked direction with a nearest pellet and no ghost
+;; (if that exists)
+(<== (directionToFace ?direction)
+        (noAdjacentGhosts)
+        (multipleNearestPellets)
+        (nearestPellet ?direction)
+        (uninferredSentence (nearestGhost ?direction))
+        (uninferredSentence (blocked ?direction))
+)
+
+
+
+
 ;; if there are no pellets and you're facing a direction that
 ;; isn't blocked, keep facing that way
 (<== (directionToFace ?direction)

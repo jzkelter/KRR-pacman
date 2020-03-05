@@ -28,40 +28,6 @@
 (arg1Isa nearestGhost 2DNonDiagonal)
 (comment nearestGhost "(nearestGhost ?direction) says that the nearest ghost is at ?direction. If multiple ghosts are the same distance away, there will be multiple of these.")
 
-(isa noSurroundingPellets Predicate)
-(arity noSurroundingPellets 0)
-(comment noSurroundingPellets "(noSurroundingPellets) says there are no pellets around PacPerson")
-
-
-(<== (noSurroundingPellets)
-        (uninferredSentence (nearestPellet Up))
-        (uninferredSentence (nearestPellet Right))
-        (uninferredSentence (nearestPellet Down))
-        (uninferredSentence (nearestPellet Left))
-)
-
-(isa noAdjacentGhosts Predicate)
-(arity noAdjacentGhosts 0)
-(comment noAdjacentGhosts "(noAdjacentGhosts) says there are no ghosts around PacPerson")
-
-(<== (noAdjacentGhosts)
-        (uninferredSentence (ghost Up))
-        (uninferredSentence (ghost Right))
-        (uninferredSentence (ghost Down))
-        (uninferredSentence (ghost Left))
-)
-
-(isa multipleNearestPellets Predicate)
-(arity multipleNearestPellets 0)
-(comment multipleNearestPellets "(multipleNearestPellets) says there are multiple equidistant nearest pellets")
-
-(<== (multipleNearestPellets)
-        (nearestPellet ?directionA)
-        (nearestPellet ?directionB)
-        (different ?directionA ?directionB)
-)
-
-
 (<== (hasMultipleOutputs ?arity1Function)
         (?arity1Function ?output1)
         (?arity1Function ?output2)
@@ -103,6 +69,15 @@
         (directionToFaceWithNearestPellet ?dir)
 )
 
+;; There is more than one unblocked direction but nearest pellet returns nothing
+(<== (directionToFace ?dir)
+        (isa ?dir 2DNonDiagonal)
+        (uninferredSentence (facing ?dir))
+        (hasMultipleOutputs unblocked)
+        (uninferredSentence (directionToFaceWithNearestPellet ?dir))
+        (unblocked ?dir)
+)
+
 ;; CONSIDERING NEAREST PELLET
 (<== (nearestPelletAndUnblocked ?dir)
         (nearestPellet ?dir)
@@ -120,6 +95,14 @@
         (hasMultipleOutputs nearestPelletAndUnblocked)
         (notNearestGhostAndNearestPelletAndUnblocked ?dir)
 )
+
+;; There is more than one nearest pellet, but thinking about nearest ghost eliminates all options
+(<== (directionToFace ?dir)
+        (hasMultipleOutputs nearestPelletAndUnblocked)
+        (uninferredSentence (notNearestGhostAndNearestPelletAndUnblocked ?dir))
+        (nearestPelletAndUnblocked ?dir)
+)
+
 
 ;; CONSIDERING NEAREST GHOST
 (<== (notNearestGhostAndNearestPelletAndUnblocked ?dir)

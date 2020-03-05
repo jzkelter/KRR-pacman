@@ -2,8 +2,7 @@
 (genlMt PacPersonMt PacPersonFactsMt)
 
 (facing Right)
-(wall Up)
+(wall Right)
 (wall Left)
-;; (wall Right)
-;; (nearestPellet Right)
-;; (nearestPellet Down)
+(nearestPellet Right)
+(nearestPellet Left)

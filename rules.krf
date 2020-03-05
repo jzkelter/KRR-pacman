@@ -1,0 +1,45 @@
+(in-microtheory PacPersonMt)
+(genlMt PacPersonMt QualitativeMechanicsMt)
+
+;;;ONTOLOGY DEFINITIONS
+(isa wall Predicate)
+(arity wall 1)
+(arg1Isa wall 2DNonDiagonal)
+(comment wall "(wall ?direction) says that ?direction is a wall")
+
+(isa facing Predicate)
+(arity facing 1)
+(arg1Isa facing 2DNonDiagonal)
+(comment facing "(facing ?direction) says that PacPerson is facing ?direction")
+
+(isa directionToFace Predicate)
+(arity directionToFace 1)
+(arg1Isa directionToFace 2DNonDiagonal)
+(comment directionToFace "(directionToFace ?direction) says that PacPerson should next face ?direction")
+
+(isa nearestPellet Predicate)
+(arity nearestPellet 1)
+(arg1Isa nearestPellet 2DNonDiagonal)
+(comment nearestPellet "(nearestPellet ?direction) says that the nearest pellet is at ?direction. If multiple pellets are the same distance away, there will be multiple of these.")
+
+(isa nearestGhost Predicate)
+(arity nearestGhost 1)
+(arg1Isa nearestGhost 2DNonDiagonal)
+(comment nearestGhost "(nearestGhost ?direction) says that the nearest ghost is at ?direction. If multiple ghosts are the same distance away, there will be multiple of these.")
+
+;;;;;;;;;HELPERS;;;;
+
+;;;Which directions are unblocked?
+(<== (unblocked ?dir)
+		(isa ?dir 2DNonDiagonal)
+		(uninferredSentence (wall ?dir))
+		(uninferredSentence (ghost ?dir))
+)
+
+
+;;;;;;;;;RULES;;;;;;;;
+
+;;;Rule 1. If current_direction unblocked --> keep going
+(<== ()
+
+)

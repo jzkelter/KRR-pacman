@@ -1,8 +1,7 @@
 (in-microtheory PacPersonFactsMt)
 (genlMt PacPersonMt PacPersonFactsMt)
 
-(facing Right)
+(facing Left)
+(wall Up)
 (wall Right)
 (wall Left)
-(nearestPellet Right)
-(nearestPellet Left)

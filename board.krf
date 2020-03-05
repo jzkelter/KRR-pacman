@@ -3,6 +3,10 @@
 
 ;; ontologize
 
+(isa successLoad Predicate)
+(arity successLoad 0)
+(comment successLoad "(successLoad) just tells me the new microtheory loaded successfully compared to the one that didn't contain this predicate")
+
 (isa wall Predicate)
 (arity wall 1)
 (arg1Isa wall 2DNonDiagonal)
@@ -47,19 +51,25 @@
         (uninferredSentence (ghost ?dir))
 )
 
-;; CONSIDERING BLOCKED + FACING
-
-;; There is one unblocked direction. Face it.
-(<== (directionToFace ?dir)
-        (unblocked ?dir)
-        (uninferredSentence (hasMultipleOutputs unblocked))
-)
+;; PRIORITY 0. CHOOSE CURRENT DIRECTION (if available)
 
 ;; You're facing an unblocked direction. Keep going.
 (<== (directionToFace ?dir)
         (unblocked ?dir)
         (facing ?dir)
 )
+
+;; PRIORITY 1. CHOOSE AN UNBLOCKED DIRECTION (but only if there's only one)
+
+;; There is one unblocked direction. Face it.
+(<== (directionToFace ?dir)
+        ;;;Only one unblocked direction
+        (unblocked ?dir)
+        (not (hasMultipleOutputs unblocked))
+)
+
+
+;;;PRIORITY 2. 
 
 ;; There is more than one unblocked direction. Think about nearest pellet.
 (<== (directionToFace ?dir)

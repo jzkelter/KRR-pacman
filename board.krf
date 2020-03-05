@@ -97,6 +97,7 @@
 
 ;; There is more than one unblocked direction. Think about nearest pellet.
 (<== (directionToFace ?dir)
+        (isa ?dir 2DNonDiagonal)
         (uninferredSentence (facing ?dir))
         (hasMultipleOutputs unblocked)
         (directionToFaceWithNearestPellet ?dir)
@@ -122,6 +123,7 @@
 
 ;; CONSIDERING NEAREST GHOST
 (<== (notNearestGhostAndNearestPelletAndUnblocked ?dir)
+        (isa ?dir 2DNonDiagonal)
         (nearestPellet ?dir)
         (unblocked ?dir)
         (uninferredSentence (nearestGhost ?dir))

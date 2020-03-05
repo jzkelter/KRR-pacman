@@ -2,8 +2,19 @@
 (genlMt PacPersonMt PacPersonFactsMt)
 
 (facing Right)
-(blocked Up)
-(blocked Left)
-(blocked Right)
-;; (pellet Right)
-;; (pellet Down)
+(wall Up)
+(wall Left)
+(wall Right)
+;; (nearestPellet Right)
+;; (nearestPellet Down)
+
+;; which direction you're facing
+(facing Right)
+;; wall immediately next to you
+(wall Right)
+;; ghost immediately next to you
+(ghost Right)
+;; nearest pellet
+(nearestPellet Right)
+;; nearest ghost
+(nearestGhost Right)

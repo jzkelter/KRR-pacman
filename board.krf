@@ -3,10 +3,10 @@
 
 ;; ontologize
 
-(isa blocked Predicate)
-(arity blocked 1)
-(arg1Isa blocked 2DNonDiagonal)
-(comment blocked "(blocked ?direction) says that ?direction is blocked")
+(isa wall Predicate)
+(arity wall 1)
+(arg1Isa wall 2DNonDiagonal)
+(comment wall "(wall ?direction) says that ?direction is a wall")
 
 (isa facing Predicate)
 (arity facing 1)
@@ -16,7 +16,7 @@
 (isa directionToFace Predicate)
 (arity directionToFace 1)
 (arg1Isa directionToFace 2DNonDiagonal)
-(comment directionToFace "(direcionToFace ?direction) says that PacPerson should next face ?direction")
+(comment directionToFace "(directionToFace ?direction) says that PacPerson should next face ?direction")
 
 (isa nearestPellet Predicate)
 (arity nearestPellet 1)
@@ -61,56 +61,76 @@
         (different ?directionA ?directionB)
 )
 
-;; THERE IS A GHOST NEXT TO YOU
-;; face an unblocked direction where there is no ghost
-(<== (directionToFace ?direction)
-        (not (noAdjacentGhosts))
-        (isa ?direction 2DNonDiagonal)
-        (uninferredSentence (blocked ?direction)
-        (uninferredSentence (ghost ?direction))
+
+(<== (hasMultipleOutputs ?arity1Function)
+        (?arity1Function ?output1)
+        (?arity1Function ?output2)
+        (different ?output1 ?output2)
+)
+
+;; Priorities:
+;; at each level if there's just one option then we're done
+;; 1. no ghost/no wall (not blocked)
+;; 2. nearestPellet
+;; 3. not nearestGhost
+;; 4. facing
+
+(<== (unblocked ?dir)
+        (uninferredSentence (wall ?dir))
+        (uninferredSentence (ghost ?dir))
+)
+
+;; There is one unblocked direction. Face it.
+(<== (directionToFace ?dir)
+        (unblocked ?dir)
+        (not (hasMultipleOutputs unblocked))
+)
+
+;; There is more than one unblocked direction. Think about nearest pellet.
+(<== (directionToFace ?dir)
+        (hasMultipleOutputs unblocked)
+        (directionToFaceWithNearestPellet ?dir)
+)
+
+(<== (nearestPelletAndUnblocked ?dir)
+        (nearestPellet ?dir)
+        (unblocked ?dir)
+)
+
+;; There's only one nearest pellet, so face it
+(<== (directionToFaceWithNearestPellet ?dir)
+        (not (hasMultipleOutputs nearestPelletAndUnblocked))
+        (nearestPelletAndUnblocked ?dir)
+)
+
+;; There's more than one nearest pellet, so think about nearest ghost
+(<== (directionToFaceWithNearestPellet ?dir)
+        (hasMultipleOutputs nearestPelletAndUnblocked)
+        (directionToFaceWithNearestGhost ?dir)
+)
+
+(<== (notNearestGhostAndNearestPelletAndUnblocked ?dir)
+        (nearestPellet ?dir)
+        (unblocked ?dir)
+        (uninferredSentence (nearestGhost ?dir))
+)
+
+;; There's only one direction not facing the nearest ghost so go that way
+(<== (directionToFaceWithNearestGhost ?dir)
+        (not (hasMultipleOutputs notNearestGhostAndNearestPelletAndUnblocked))
+        (notNearestGhostAndNearestPelletAndUnblocked ?dir)
+)
+
+;; There are multiple directions not facing the nearest ghost so keep going straight
+(<== (directionToFaceWithNearestGhost ?dir)
+        (hasMultipleOutputs notNearestGhostAndNearestPelletAndUnblocked)
+        (notNearestGhostAndNearestPelletAndUnblocked ?dir)
+        (facing ?dir)
 )
 
 
-;; THERE IS NO GHOST NEXT TO YOU
-
-;; there is only one nearest pellet and that direction is not blocked. face it.
-(<== (directionToFace ?direction)
-        (noAdjacentGhosts)
-        (not (multipleNearestPellets))
-        (nearestPellet ?direction)
-        (uninferredSentence (blocked ?direction))
-)
-
-;; there are multiple nearest pellets
-;; pick an unblocked direction with a nearest pellet and no ghost
-;; (if that exists)
-(<== (directionToFace ?direction)
-        (noAdjacentGhosts)
-        (multipleNearestPellets)
-        (nearestPellet ?direction)
-        (uninferredSentence (nearestGhost ?direction))
-        (uninferredSentence (blocked ?direction))
-)
 
 
 
-
-;; if there are no pellets and you're facing a direction that
-;; isn't blocked, keep facing that way
-(<== (directionToFace ?direction)
-        (noSurroundingPellets)
-        (facing ?direction)
-        (uninferredSentence (blocked ?direction))
-)
-
-;; if there are no pellets and you're facing a direction that
-;; is blocked, face a direction that isn't
-(<== (directionToFace ?directionB)
-        (noSurroundingPellets)
-        (facing ?directionA)
-        (blocked ?directionA)
-        (isa ?directionB 2DNonDiagonal)
-        (uninferredSentence (blocked ?directionB))
-)
 
 ;; preferInContext (if you have multiple which one to pick)

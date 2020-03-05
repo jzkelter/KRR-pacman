@@ -4,6 +4,6 @@
 (facing Right)
 (wall Up)
 (wall Left)
-(wall Right)
+;; (wall Right)
 ;; (nearestPellet Right)
 ;; (nearestPellet Down)

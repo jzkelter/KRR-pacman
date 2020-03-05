@@ -2,8 +2,8 @@
 (genlMt PacPersonMt PacPersonFactsMt)
 
 (facing Right)
-(blocked Up)
-(blocked Left)
-(blocked Right)
-;; (pellet Right)
-;; (pellet Down)
+
+(left wall)
+(right wall)
+(up ghost)
+(down pellet)

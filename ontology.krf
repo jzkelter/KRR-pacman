@@ -1,0 +1,33 @@
+;;;ONTOLOGY STUFF;;;
+
+
+;;;ENTITIES
+
+(isa pellet Predicate)
+(arity pellet 1)
+(arg1Isa pellet 2DNonDiagonal)
+(comment pellet "(pellet ?direction) says that there is a pellet at ?direction")
+
+
+
+;;;PACPERSON PREDICATES
+
+(isa facing Predicate)
+(arity facing 1)
+(arg1Isa facing 2DNonDiagonal)
+(comment facing "(facing ?direction) says that PacPerson is facing ?direction")
+
+
+
+;;;RELATIONS
+(isa blocked Predicate)
+(arity blocked 1)
+(arg1Isa blocked 2DNonDiagonal)
+(comment blocked "(blocked ?direction) says that ?direction is blocked")
+
+
+;;;FUNCTIONS
+(isa directionToFace Predicate)
+(arity directionToFace 1)
+(arg1Isa directionToFace 2DNonDiagonal)
+(comment directionToFace "(direcionToFace ?direction) says that PacPerson should next face ?direction")

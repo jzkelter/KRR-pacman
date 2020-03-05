@@ -1,0 +1,10 @@
+;;;RULES FOR PACPERSON TO FOLLOW;;;
+
+;;;If the current direction is not blocked --> face that direction
+(<== (directionToFace dir?)
+        (uninferredSentence (pellet Up))
+        (uninferredSentence (pellet Right))
+        (uninferredSentence (pellet Down))
+        (uninferredSentence (pellet Left))
+)
+

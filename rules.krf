@@ -29,64 +29,12 @@
 
 ;;;;;;;;;HELPERS;;;;
 
-;;;;Output Helpers
-;;;Does this function have multiple outputs
-(<== (hasMultipleOutputs ?arity1Function ?outputType)
-        (?arity1Function ?output1)
-        (isa ?output1 ?outputType)
-        
-        (?arity1Function ?output2)
-        (isa ?output2 ?outputType)
-        
-        (different ?output1 ?output2)
-)
-
-;;;Does this function have only one output?
-(<== (hasOneOutput ?arity1Function ?outputType)
-		(?arity1Function ?output1) 				;;;Function has an output
-		(isa ?output1 ?outputType)				;;;Output matches the output type (basically is not null)
-		(not (hasMultipleOutputs ?arity1Function ?outputType))
-)
-
-;;;;;Blocked helpers
 
 ;;;Which directions are unblocked?
 (<== (unblocked ?dir)
 		(isa ?dir 2DNonDiagonal)
 		(uninferredSentence (wall ?dir))
 		(uninferredSentence (ghost ?dir))
-)
-
-;;;Returns an unblocked direction if there is only one available.
-(<== (one_unblocked ?dir)
-		(isa ?dir 2DNonDiagonal)
-		(hasOneOutput unblocked 2DNonDiagonal)
-		(unblocked ?dir)
-)
-
-;;;Pellet helpers
-
-;;;Which directions have valid (unblocked) nearestPellets?
-(<== (unblockedNearestPellets ?dir)
-		(isa ?dir 2DNonDiagonal)
-		(unblocked ?dir)
-		(nearestPellet ?dir)
-)
-
-;;;Returns an unblocked nearest pellet if only one is available.
-(<== (one_unblocked_nearest_pellet ?dir)
-		(isa ?dir 2DNonDiagonal)
-		(hasOneOutput unblockedNearestPellets 2DNonDiagonal)
-		(unblockedNearestPellets ?dir)
-)
-
-;;;Ghost helpers
-
-;;;Returns any direction with no block or nearestGhosts
-(<== (unblockedAndNoNearestGhosts ?dir)
-		(isa ?dir 2DNonDiagonal)
-		(unblocked ?dir)
-		(uninferredSentence (nearestGhost ?dir))
 )
 
 ;;;Returns all of the directions free of nearest ghosts
@@ -96,7 +44,7 @@
 )
 
 
-;;;;;;;;Rules_new;;;;;;
+;;;;;;;;Rules;;;;;;
 
 ;;;Rule 1. If facing direction unblocked --> keep facing direction
 (<== (rule1 ?dir)
@@ -157,6 +105,62 @@
 		(rule5 ?dir)
 )
 
+
+
+;;;;;;;;UNUSED HELPERS;;;;;
+;;;Does this function have multiple outputs
+(<== (hasMultipleOutputs ?arity1Function ?outputType)
+        (?arity1Function ?output1)
+        (isa ?output1 ?outputType)
+        
+        (?arity1Function ?output2)
+        (isa ?output2 ?outputType)
+        
+        (different ?output1 ?output2)
+)
+
+;;;Does this function have only one output?
+(<== (hasOneOutput ?arity1Function ?outputType)
+		(?arity1Function ?output1) 				;;;Function has an output
+		(isa ?output1 ?outputType)				;;;Output matches the output type (basically is not null)
+		(not (hasMultipleOutputs ?arity1Function ?outputType))
+)
+
+;;;;;Blocked helpers
+
+
+
+;;;Returns an unblocked direction if there is only one available.
+(<== (one_unblocked ?dir)
+		(isa ?dir 2DNonDiagonal)
+		(hasOneOutput unblocked 2DNonDiagonal)
+		(unblocked ?dir)
+)
+
+;;;Pellet helpers
+
+;;;Which directions have valid (unblocked) nearestPellets?
+(<== (unblockedNearestPellets ?dir)
+		(isa ?dir 2DNonDiagonal)
+		(unblocked ?dir)
+		(nearestPellet ?dir)
+)
+
+;;;Returns an unblocked nearest pellet if only one is available.
+(<== (one_unblocked_nearest_pellet ?dir)
+		(isa ?dir 2DNonDiagonal)
+		(hasOneOutput unblockedNearestPellets 2DNonDiagonal)
+		(unblockedNearestPellets ?dir)
+)
+
+;;;Ghost helpers
+
+;;;Returns any direction with no block or nearestGhosts
+(<== (unblockedAndNoNearestGhosts ?dir)
+		(isa ?dir 2DNonDiagonal)
+		(unblocked ?dir)
+		(uninferredSentence (nearestGhost ?dir))
+)
 
 
 

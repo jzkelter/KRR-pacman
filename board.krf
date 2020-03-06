@@ -3,10 +3,6 @@
 
 ;; ontologize
 
-(isa successLoad Predicate)
-(arity successLoad 0)
-(comment successLoad "(successLoad) just tells me the new microtheory loaded successfully compared to the one that didn't contain this predicate")
-
 (isa wall Predicate)
 (arity wall 1)
 (arg1Isa wall 2DNonDiagonal)
@@ -41,9 +37,9 @@
 ;; Priorities:
 ;; at each level if there's just one option then we're done
 ;; 1. no ghost/no wall (not blocked)
+;; 2. facing
 ;; 2. nearestPellet
 ;; 3. not nearestGhost
-;; 4. facing (make this #2?)
 
 (<== (unblocked ?dir)
         (isa ?dir 2DNonDiagonal)
@@ -51,25 +47,19 @@
         (uninferredSentence (ghost ?dir))
 )
 
-;; PRIORITY 0. CHOOSE CURRENT DIRECTION (if available)
+;; CONSIDERING BLOCKED + FACING
+
+;; There is one unblocked direction. Face it.
+(<== (directionToFace ?dir)
+        (unblocked ?dir)
+        (uninferredSentence (hasMultipleOutputs unblocked))
+)
 
 ;; You're facing an unblocked direction. Keep going.
 (<== (directionToFace ?dir)
         (unblocked ?dir)
         (facing ?dir)
 )
-
-;; PRIORITY 1. CHOOSE AN UNBLOCKED DIRECTION (but only if there's only one)
-
-;; There is one unblocked direction. Face it.
-(<== (directionToFace ?dir)
-        ;;;Only one unblocked direction
-        (unblocked ?dir)
-        (not (hasMultipleOutputs unblocked))
-)
-
-
-;;;PRIORITY 2. 
 
 ;; There is more than one unblocked direction. Think about nearest pellet.
 (<== (directionToFace ?dir)
@@ -121,9 +111,3 @@
         (unblocked ?dir)
         (uninferredSentence (nearestGhost ?dir))
 )
-
-
-
-
-
-;; preferInContext (if you have multiple which one to pick)

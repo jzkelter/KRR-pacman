@@ -7,15 +7,10 @@
 (arg1Isa wall 2DNonDiagonal)
 (comment wall "(wall ?direction) says that ?direction is a wall")
 
-(isa facing Predicate)
-(arity facing 1)
-(arg1Isa facing 2DNonDiagonal)
-(comment facing "(facing ?direction) says that PacPerson is facing ?direction")
-
-(isa directionToFace Predicate)
-(arity directionToFace 1)
-(arg1Isa directionToFace 2DNonDiagonal)
-(comment directionToFace "(directionToFace ?direction) says that PacPerson should next face ?direction")
+(isa ghost Predicate)
+(arity ghost 1)
+(arg1Isa ghost 2DNonDiagonal)
+(comment ghost "(ghost ?direction) says that ?direction has a ghost < 3 steps away")
 
 (isa nearestPellet Predicate)
 (arity nearestPellet 1)
@@ -27,26 +22,21 @@
 (arg1Isa nearestGhost 2DNonDiagonal)
 (comment nearestGhost "(nearestGhost ?direction) says that the nearest ghost is at ?direction. If multiple ghosts are the same distance away, there will be multiple of these.")
 
+(isa blueGhosts Predicate)
+(arity blueGhosts 0)
+(comment blueGhosts "(blueGhosts) says that we are currently in the state where ghosts are edible")
+
+(isa facing Predicate)
+(arity facing 1)
+(arg1Isa facing 2DNonDiagonal)
+(comment facing "(facing ?direction) says that PacPerson is facing ?direction")
+
+(isa directionToFace Predicate)
+(arity directionToFace 1)
+(arg1Isa directionToFace 2DNonDiagonal)
+(comment directionToFace "(directionToFace ?direction) says that PacPerson should next face ?direction")
+
 ;;;;;;;;;HELPERS;;;;
-
-;;;;Output Helpers
-;;;Does this function have multiple outputs
-(<== (hasMultipleOutputs ?arity1Function ?outputType)
-        (?arity1Function ?output1)
-        (isa ?output1 ?outputType)
-        
-        (?arity1Function ?output2)
-        (isa ?output2 ?outputType)
-        
-        (different ?output1 ?output2)
-)
-
-;;;Does this function have only one output?
-(<== (hasOneOutput ?arity1Function ?outputType)
-		(?arity1Function ?output1) 				;;;Function has an output
-		(isa ?output1 ?outputType)				;;;Output matches the output type (basically is not null)
-		(not (hasMultipleOutputs ?arity1Function ?outputType))
-)
 
 ;;;;;Blocked helpers
 
@@ -57,38 +47,8 @@
 		(uninferredSentence (ghost ?dir))
 )
 
-;;;Returns an unblocked direction if there is only one available.
-(<== (one_unblocked ?dir)
-		(isa ?dir 2DNonDiagonal)
-		(hasOneOutput unblocked 2DNonDiagonal)
-		(unblocked ?dir)
-)
-
-;;;Pellet helpers
-
-;;;Which directions have valid (unblocked) nearestPellets?
-(<== (unblockedNearestPellets ?dir)
-		(isa ?dir 2DNonDiagonal)
-		(unblocked ?dir)
-		(nearestPellet ?dir)
-)
-
-;;;Returns an unblocked nearest pellet if only one is available.
-(<== (one_unblocked_nearest_pellet ?dir)
-		(isa ?dir 2DNonDiagonal)
-		(hasOneOutput unblockedNearestPellets 2DNonDiagonal)
-		(unblockedNearestPellets ?dir)
-)
 
 ;;;Ghost helpers
-
-;;;Returns any direction with no block or nearestGhosts
-(<== (unblockedAndNoNearestGhosts ?dir)
-		(isa ?dir 2DNonDiagonal)
-		(unblocked ?dir)
-		(uninferredSentence (nearestGhost ?dir))
-)
-
 ;;;Returns all of the directions free of nearest ghosts
 (<== (nearestGhostFree ?dir)
 		(isa ?dir 2DNonDiagonal)
@@ -96,24 +56,40 @@
 )
 
 
-;;;;;;;;Rules_new;;;;;;
-
-;;;Rule 1. If facing direction unblocked --> keep facing direction
+;;;Rule 1. Face direction that is (a) unblocked, (b) has nearestPellet, and (c) nearestGhostFree
 (<== (rule1 ?dir)
+		(uninferredSentence (blueGhosts))
 		(unblocked ?dir)	;;;List of unblocked directions
-		(facing ?dir)		;;;The direction PacPerson is facing
-	;;;Result: If current_direction unblocked --> ?dir = current_direction
-)
-
-;;;Rule 2. If not Rule1, face direction that is (a) unblocked, (b) has nearestPellet, and (c) nearestGhostFree
-(<== (rule2 ?dir)
-		(uninferredSentence (rule1 ?dir))
-		(unblocked ?dir)
 		(nearestPellet ?dir)
 		(nearestGhostFree ?dir)
 )
 
-;;;Rule 3. If not Rule1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet
+;; Rule 1.5. Same as Rule 1 except blocked no longer includes ghosts (because ghosts are edible) and go towards ghosts
+(<== (rule15 ?dir)
+		(blueGhosts)
+		(isa ?dir 2DNonDiagonal)
+		(uninferredSentence (wall ?dir))
+		(nearestPellet ?dir)
+		(nearestGhost ?dir)
+
+;;;Rule 2. If facing direction unblocked --> keep facing direction
+(<== (rule2 ?dir)
+		(uninferredSentence (blueGhosts))
+		(uninferredSentence (rule1 ?dir))
+		(unblocked ?dir)
+		(facing ?dir)		;;;The direction PacPerson is facing
+)
+
+;; Rule 2.5. Same as Rule 1 except go towards nearestGhost
+(<== (rule25 ?dir)
+		(blueGhosts)
+		(isa ?dir 2DNonDiagonal)
+		(uninferredSentence (rule15 ?dir))
+		(uninferredSentence (wall ?dir))
+		(facing ?dir)
+)
+
+;;;Rule 3. If not Rule 1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet
 (<== (rule3 ?dir)
 		(uninferredSentence (rule1 ?dir))
 		(uninferredSentence (rule2 ?dir))
@@ -121,8 +97,20 @@
 		(nearestPellet ?dir)
 )
 
+;; Rule 3.5. Same as Rule 3 but with nearestGhost instead of nearestPellet.
+(<== (rule35 ?dir)
+		(blueGhosts)
+		(isa ?dir 2DNonDiagonal)
+		(uninferredSentence (rule15 ?dir))
+		(uninferredSentence (rule25 ?dir))
+		(uninferredSentence (wall ?dir))
+		(nearestGhost ?dir)
+)
+
+
 ;;;Rule 4. If not Rule 1 and Rule 2 and Rule 3, face direction that is (a) unblocked and (c) nearestGhostFree
 (<== (rule4 ?dir)
+		(uninferredSentence (blueGhosts))
 		(uninferredSentence (rule1 ?dir))
 		(uninferredSentence (rule2 ?dir))
 		(uninferredSentence (rule3 ?dir))
@@ -130,13 +118,36 @@
 		(nearestGhostFree ?dir)
 )
 
+;; Rule 4.5. same as Rule 4 but with nearestPellet (because we used nearestGhost in 3.5) 
+(<== (rule45 ?dir)
+		(blueGhosts)
+		(isa ?dir 2DNonDiagonal)
+		(uninferredSentence (rule15 ?dir))
+		(uninferredSentence (rule25 ?dir))
+		(uninferredSentence (rule35 ?dir))
+		(uninferredSentence (wall ?dir))
+		(nearestPellet ?dir)
+)
+
 ;;;Rule 5. If not Rules 1-4, face direction that is (a) unblocked
 (<== (rule5 ?dir)
+		(uninferredSentence (blueGhosts))
 		(uninferredSentence (rule1 ?dir))
 		(uninferredSentence (rule2 ?dir))
 		(uninferredSentence (rule3 ?dir))
 		(uninferredSentence (rule4 ?dir))
 		(unblocked ?dir)
+)
+
+;; Rule 5.5. Same as Rule 5 but with the blueGhosts versions of the rules.
+(<== (rule55 ?dir)
+		(isa ?dir 2DNonDiagonal)
+		(blueGhosts)
+		(uninferredSentence (rule15 ?dir))
+		(uninferredSentence (rule25 ?dir))
+		(uninferredSentence (rule35 ?dir))
+		(uninferredSentence (rule45 ?dir))
+		(uninferredSentence (wall ?dir))
 )
 
 

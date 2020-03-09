@@ -34,23 +34,20 @@
 
 ;;;;;;;;;HELPERS;;;;
 
-;;;;;Blocked helpers
-
-;;;Which directions are unblocked?
+;;;Provides all of the unblocked directions
 (<== (unblocked ?dir)
 		(isa ?dir 2DNonDiagonal)
 		(uninferredSentence (wall ?dir))
 		(uninferredSentence (ghost ?dir))
 )
 
-
-;;;Ghost helpers
-;;;Returns all of the directions free of nearest ghosts
+;;;Provides all of the directions free of nearest ghosts
 (<== (nearestGhostFree ?dir)
 		(isa ?dir 2DNonDiagonal)
 		(uninferredSentence (nearestGhost ?dir))
 )
 
+;;;;;;;;;RULES;;;;;;
 
 ;;;Rule 1. Face direction that is (a) unblocked, (b) has nearestPellet, and (c) nearestGhostFree
 (<== (rule1 ?dir)
@@ -58,12 +55,14 @@
 		(nearestPellet ?dir)
 		(nearestGhostFree ?dir)
 )
+
 ;;;Rule 2. If facing direction unblocked --> keep facing direction
 (<== (rule2 ?dir)
 		(uninferredSentence (rule1 ?dir))
 		(unblocked ?dir)
 		(facing ?dir)		;;;The direction PacPerson is facing
 )
+
 ;;;Rule 3. If not Rule 1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet
 (<== (rule3 ?dir)
 		(uninferredSentence (rule1 ?dir))
@@ -80,6 +79,7 @@
 		(unblocked ?dir)
 		(nearestGhostFree ?dir)
 )
+
 ;;;Rule 5. If not Rules 1-4, face direction that is (a) unblocked
 (<== (rule5 ?dir)
 		(uninferredSentence (rule1 ?dir))

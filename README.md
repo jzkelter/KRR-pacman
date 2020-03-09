@@ -66,21 +66,36 @@ Each test file contains a comment on Line 4 that begins "Expected output:" follo
 #3.1. Setup
 
 #3.1.1. Install Pythonian
-- (steps to install go here)
+- (*steps to install go here)
 
 #3.1.2. Install NetLogo
-- (steps to install go here)
+- (*steps to install go here)
 
 
 #3.1.3. Load NetLogo PacPerson model code
-- (steps to load model code go here)
+- (*steps to load model code go here)
 
 
 #3.2. Run
+- (*steps to run go here)
 
-- (steps to run go here)
 
-
+#3.3. Expected output
+You should expect to see PacPerson travers the game board in NetLogo. PacPerson should be making directional choices based on the state of the world around them. These choices are laid out in greater detail in our companions code, but the high-level order of priority for choosing a direction follows this general progression:
+1. Choose the direction that is 
+	(a) unblocked (no immediate ghost or wall), 
+	(b) contains the nearest pellet, and 
+	(c) not the direction of the nearest ghost
+2. Choose the current PacPerson is currently facing (if unblocked)
+3. Choose the direction that is
+	(a) unblocked and
+	(b) contains the nearest pellet
+4. Choose the direction that is
+	(a) unblocked and
+	(b) not the direction of the nearest ghost
+5. Choose the direction that is
+	(a) unblocked
+Reminder, each rule contains a condition that the previous rules produce an uninferred sentence.
 
 
 

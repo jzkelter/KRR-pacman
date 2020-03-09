@@ -32,6 +32,42 @@
 (arg1Isa directionToFace 2DNonDiagonal)
 (comment directionToFace "(directionToFace ?direction) says that PacPerson should next face ?direction")
 
+(isa rule1 Predicate)
+(arity rule1 1)
+(arg1Isa rule1 2DNonDiagonal)
+(comment rule1 "Face direction that is (a) unblocked, (b) has nearestPellet, and (c) nearestGhostFree")
+
+(isa rule2 Predicate)
+(arity rule2 1)
+(arg1Isa rule2 2DNonDiagonal)
+(comment rule2 "If facing direction unblocked --> keep facing direction")
+
+(isa rule3 Predicate)
+(arity rule3 1)
+(arg1Isa rule1 2DNonDiagonal)
+(comment rule3 "If not Rule 1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet")
+
+(isa rule4 Predicate)
+(arity rule4 1)
+(arg1Isa rule4 2DNonDiagonal)
+(comment rule4 "If not Rule 1 and Rule 2 and Rule 3, face direction that is (a) unblocked and (c) nearestGhostFree")
+
+(isa rule5 Predicate)
+(arity rule5 1)
+(arg1Isa rule5 2DNonDiagonal)
+(comment rule5 "If not Rules 1-4, face direction that is (a) unblocked")
+
+(isa nearestGhostFree Predicate)
+(arity nearestGhostFree 1)
+(arg1Isa nearestGhostFree 2DNonDiagonal)
+(comment nearestGhostFree "Returns all directions free of nearest ghosts")
+
+(isa unblocked Predicate)
+(arity unblocked 1)
+(arg1Isa unblocked 2DNonDiagonal)
+(comment unblocked "Returns all directions that are unblocked")
+
+
 ;;;;;;;;;HELPERS;;;;
 
 ;;;;;Blocked helpers

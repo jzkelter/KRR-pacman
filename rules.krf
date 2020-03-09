@@ -85,6 +85,9 @@
 
 ;;;;;;;;;RULES;;;;;;
 
+
+;;;;;;;;Rules;;;;;;
+
 ;;;Rule 1. Face direction that is (a) unblocked, (b) has nearestPellet, and (c) nearestGhostFree
 (<== (rule1 ?dir)
 		(unblocked ?dir)	;;;List of unblocked directions

@@ -1,7 +1,7 @@
 (in-microtheory PacPersonFactsMt)
 (genlMt PacPersonMt PacPersonFactsMt)
 
-;;;Expected output: Down
+;;;Expected output: Up
 ;;;Results: PASSED
 
 (facing Down)

@@ -71,6 +71,7 @@
 		(uninferredSentence (wall ?dir))
 		(nearestPellet ?dir)
 		(nearestGhost ?dir)
+)
 
 ;;;Rule 2. If facing direction unblocked --> keep facing direction
 (<== (rule2 ?dir)

@@ -86,7 +86,9 @@ You should expect to see PacPerson travers the game board in NetLogo. PacPerson 
 	(a) unblocked (no immediate ghost or wall), 
 	(b) contains the nearest pellet, and 
 	(c) not the direction of the nearest ghost
-2. Choose the current PacPerson is currently facing (if unblocked)
+2. Choose the direction that is
+	(a) unblocked and
+	(b) the same as PacPerson is currently facing
 3. Choose the direction that is
 	(a) unblocked and
 	(b) contains the nearest pellet

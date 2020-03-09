@@ -46,19 +46,18 @@
 
 ;;;;;;;;Rules;;;;;;
 
-;;;Rule 1. If facing direction unblocked --> keep facing direction
+;;;Rule 1. Face direction that is (a) unblocked, (b) has nearestPellet, and (c) nearestGhostFree
 (<== (rule1 ?dir)
 		(unblocked ?dir)	;;;List of unblocked directions
-		(facing ?dir)		;;;The direction PacPerson is facing
-	;;;Result: If current_direction unblocked --> ?dir = current_direction
+		(nearestPellet ?dir)
+		(nearestGhostFree ?dir)
 )
 
-;;;Rule 2. If not Rule1, face direction that is (a) unblocked, (b) has nearestPellet, and (c) nearestGhostFree
+;;;Rule 2. If facing direction unblocked --> keep facing direction
 (<== (rule2 ?dir)
 		(uninferredSentence (rule1 ?dir))
 		(unblocked ?dir)
-		(nearestPellet ?dir)
-		(nearestGhostFree ?dir)
+		(facing ?dir)		;;;The direction PacPerson is facing
 )
 
 ;;;Rule 3. If not Rule1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet

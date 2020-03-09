@@ -7,15 +7,10 @@
 (arg1Isa wall 2DNonDiagonal)
 (comment wall "(wall ?direction) says that ?direction is a wall")
 
-(isa facing Predicate)
-(arity facing 1)
-(arg1Isa facing 2DNonDiagonal)
-(comment facing "(facing ?direction) says that PacPerson is facing ?direction")
-
-(isa directionToFace Predicate)
-(arity directionToFace 1)
-(arg1Isa directionToFace 2DNonDiagonal)
-(comment directionToFace "(directionToFace ?direction) says that PacPerson should next face ?direction")
+(isa ghost Predicate)
+(arity ghost 1)
+(arg1Isa ghost 2DNonDiagonal)
+(comment ghost "(ghost ?direction) says that ?direction has a ghost < 3 steps away")
 
 (isa nearestPellet Predicate)
 (arity nearestPellet 1)
@@ -27,8 +22,55 @@
 (arg1Isa nearestGhost 2DNonDiagonal)
 (comment nearestGhost "(nearestGhost ?direction) says that the nearest ghost is at ?direction. If multiple ghosts are the same distance away, there will be multiple of these.")
 
+(isa facing Predicate)
+(arity facing 1)
+(arg1Isa facing 2DNonDiagonal)
+(comment facing "(facing ?direction) says that PacPerson is facing ?direction")
+
+(isa directionToFace Predicate)
+(arity directionToFace 1)
+(arg1Isa directionToFace 2DNonDiagonal)
+(comment directionToFace "(directionToFace ?direction) says that PacPerson should next face ?direction")
+
+(isa rule1 Predicate)
+(arity rule1 1)
+(arg1Isa rule1 2DNonDiagonal)
+(comment rule1 "Face direction that is (a) unblocked, (b) has nearestPellet, and (c) nearestGhostFree")
+
+(isa rule2 Predicate)
+(arity rule2 1)
+(arg1Isa rule2 2DNonDiagonal)
+(comment rule2 "If facing direction unblocked --> keep facing direction")
+
+(isa rule3 Predicate)
+(arity rule3 1)
+(arg1Isa rule1 2DNonDiagonal)
+(comment rule3 "If not Rule 1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet")
+
+(isa rule4 Predicate)
+(arity rule4 1)
+(arg1Isa rule4 2DNonDiagonal)
+(comment rule4 "If not Rule 1 and Rule 2 and Rule 3, face direction that is (a) unblocked and (c) nearestGhostFree")
+
+(isa rule5 Predicate)
+(arity rule5 1)
+(arg1Isa rule5 2DNonDiagonal)
+(comment rule5 "If not Rules 1-4, face direction that is (a) unblocked")
+
+(isa nearestGhostFree Predicate)
+(arity nearestGhostFree 1)
+(arg1Isa nearestGhostFree 2DNonDiagonal)
+(comment nearestGhostFree "Returns all directions free of nearest ghosts")
+
+(isa unblocked Predicate)
+(arity unblocked 1)
+(arg1Isa unblocked 2DNonDiagonal)
+(comment unblocked "Returns all directions that are unblocked")
+
+
 ;;;;;;;;;HELPERS;;;;
 
+;;;;;Blocked helpers
 
 ;;;Which directions are unblocked?
 (<== (unblocked ?dir)
@@ -37,11 +79,14 @@
 		(uninferredSentence (ghost ?dir))
 )
 
+
+;;;Ghost helpers
 ;;;Returns all of the directions free of nearest ghosts
 (<== (nearestGhostFree ?dir)
 		(isa ?dir 2DNonDiagonal)
 		(uninferredSentence (nearestGhost ?dir))
 )
+
 
 
 ;;;;;;;;Rules;;;;;;
@@ -59,8 +104,7 @@
 		(unblocked ?dir)
 		(facing ?dir)		;;;The direction PacPerson is facing
 )
-
-;;;Rule 3. If not Rule1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet
+;;;Rule 3. If not Rule 1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet
 (<== (rule3 ?dir)
 		(uninferredSentence (rule1 ?dir))
 		(uninferredSentence (rule2 ?dir))
@@ -76,7 +120,6 @@
 		(unblocked ?dir)
 		(nearestGhostFree ?dir)
 )
-
 ;;;Rule 5. If not Rules 1-4, face direction that is (a) unblocked
 (<== (rule5 ?dir)
 		(uninferredSentence (rule1 ?dir))
@@ -85,7 +128,6 @@
 		(uninferredSentence (rule4 ?dir))
 		(unblocked ?dir)
 )
-
 
 ;;;ENTRY POINT FOR QUERY FROM NETLOGO
 (<== (directionToFace ?dir)
@@ -104,62 +146,6 @@
 		(rule5 ?dir)
 )
 
-
-
-;;;;;;;;UNUSED HELPERS;;;;;
-;;;Does this function have multiple outputs
-(<== (hasMultipleOutputs ?arity1Function ?outputType)
-        (?arity1Function ?output1)
-        (isa ?output1 ?outputType)
-        
-        (?arity1Function ?output2)
-        (isa ?output2 ?outputType)
-        
-        (different ?output1 ?output2)
-)
-
-;;;Does this function have only one output?
-(<== (hasOneOutput ?arity1Function ?outputType)
-		(?arity1Function ?output1) 				;;;Function has an output
-		(isa ?output1 ?outputType)				;;;Output matches the output type (basically is not null)
-		(not (hasMultipleOutputs ?arity1Function ?outputType))
-)
-
-;;;;;Blocked helpers
-
-
-
-;;;Returns an unblocked direction if there is only one available.
-(<== (one_unblocked ?dir)
-		(isa ?dir 2DNonDiagonal)
-		(hasOneOutput unblocked 2DNonDiagonal)
-		(unblocked ?dir)
-)
-
-;;;Pellet helpers
-
-;;;Which directions have valid (unblocked) nearestPellets?
-(<== (unblockedNearestPellets ?dir)
-		(isa ?dir 2DNonDiagonal)
-		(unblocked ?dir)
-		(nearestPellet ?dir)
-)
-
-;;;Returns an unblocked nearest pellet if only one is available.
-(<== (one_unblocked_nearest_pellet ?dir)
-		(isa ?dir 2DNonDiagonal)
-		(hasOneOutput unblockedNearestPellets 2DNonDiagonal)
-		(unblockedNearestPellets ?dir)
-)
-
-;;;Ghost helpers
-
-;;;Returns any direction with no block or nearestGhosts
-(<== (unblockedAndNoNearestGhosts ?dir)
-		(isa ?dir 2DNonDiagonal)
-		(unblocked ?dir)
-		(uninferredSentence (nearestGhost ?dir))
-)
 
 
 

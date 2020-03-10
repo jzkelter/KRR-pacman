@@ -44,7 +44,7 @@
 
 (isa rule3 Predicate)
 (arity rule3 1)
-(arg1Isa rule1 2DNonDiagonal)
+(arg1Isa rule3 2DNonDiagonal)
 (comment rule3 "If not Rule 1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet")
 
 (isa rule4 Predicate)

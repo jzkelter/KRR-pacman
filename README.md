@@ -1,11 +1,13 @@
 # KRR-pacman
 Class project for KRR, using Companions to control Pac-man implemented in NetLogo.
 
+Maryam Hedayati, Jacob Kelter, Nick LaGrassa
+
 
 ######Table of Contents#######
 #1. High-level walkthrough
-#2. Test companions-side implementation (without NetLogo and Pythonian)
-#3. Run full implementation (companions, NetLogo, Pythonian)
+#2. Test Companions-side Implementation Only (without NetLogo and Pythonian)
+#3. Run Full Implementation (Companions, NetLogo, Pythonian)
 #####End Table of Contents####
 
 
@@ -18,16 +20,16 @@ This system is comprised of three principle components:
 
 Our Companions code houses the ontology we have created for the PacPerson game. This includes entities such as ghosts, walls, and pellets (the dots that PacPerson eats) and other predicates like blocked (which indicates that the direction for a tile adjacent to PacPerson is invalid because either a wall or a ghost is located on that tile). For a more detailed list of the elements of our ontology, please refer to the section labeled "Ontology" in the file rules.krf (instructions below on how to access).
 
-Our companions code also contains the rules that govern the appropriate behavior of PacPerson given the state of the game board at each 'tick', or decision-making moment. NetLogo sends facts such as the directional location of any adjacent walls, ghosts, or nearest pellets, as well as the directions of nearby ghosts. Our rules take these facts and reason about which direction(s) are most ideal to travel. As will be evident in the code, these rules are numbered and structured in a hierarchy, where lower-number rules (example: Rule 1) are prioritized over higher-number rules (example: Rule 4). Higher-number rules are only used for reasoning about the direction to travel in if the lower-level rules fail to generate a viable direction for PacPerson to move.
+Our Companions code also contains the rules that govern the appropriate behavior of PacPerson given the state of the game board at each 'tick', or decision-making moment. NetLogo sends facts such as the directional location of any adjacent walls, ghosts, or nearest pellets, as well as the directions of nearby ghosts. Our rules take these facts and reason about which direction(s) are most ideal to travel. As will be evident in the code, these rules are numbered and structured in a hierarchy, where lower-number rules (example: Rule 1) are prioritized over higher-number rules (example: Rule 4). Higher-number rules are only used for reasoning about the direction to travel in if the lower-level rules fail to generate a viable direction for PacPerson to move.
 
 
-#2. Test Companions-side implementation
+#2. Test Companions-side Implementation Only
 
 Note: For setup, we assume that the reader is familiar with the Companions software and has it installed on their machines already.
 
 
 #2.1. First, access our Companions code in our GitHub
-- #steps to get our code go here#
+- Make a local clone of our GitHub repository: https://github.com/jzkelter/KRR-pacman
 
 
 #2.2. To test our Companions code for the first time, follow Steps 1-13 below:
@@ -61,7 +63,7 @@ Each test file contains a comment on Line 4 that begins "Expected output:" follo
 
 
 
-#3. Run full implementation (companions, NetLogo, Pythonian)
+#3. Run Full Implementation (Companions, NetLogo, Pythonian)
 
 #3.1. Setup
 
@@ -73,18 +75,12 @@ Each test file contains a comment on Line 4 that begins "Expected output:" follo
 
 
 #3.1.3. Load NetLogo PacPerson model code
-Simply add the pac_agent.py file to the pythonian directory as well as KRR-Pac-Man.nlogo
-and pacmap1.csv to the same directory (and the other pacmap*.csv files if you want other levels).
+Simply add the pac_agent.py file to the pythonian directory as well as KRR-Pac-Man.nlogo and pacmap1.csv to the same directory (and the other pacmap*.csv files if you want other levels).
 Simply opening KRR-Pac-Man.nlogo from that folder should run everything.
 
 
 #3.2. Run
-Once KRR-Pac-Man.nlogo is open and Companions is running, click the "New" button and then "Play."
-Due to a Pythonian issue, sometimes on the first time step nothing is returned from Companions
-and NetLogo throws an error. Just dismiss this and click play again and it should work. However,
-also due to a Pythonian issue, when running in real time either updating the world-facts in Companions
-or quering the next direction to face doesn't work. This makes "Play" behavior buggy. Moving one move
-at a time with the "play once" button seems to work better. However, this may also have Pythonian issues. We then will click the "send-companion-world-state" and "ask-companion-direction-to-face" buttons until the correct options are being returned and then press "play-once" again. 
+Once KRR-Pac-Man.nlogo is open and Companions is running, click the "New" button and then "Play." Due to a Pythonian issue, sometimes on the first time step nothing is returned from Companions and NetLogo throws an error. Just dismiss this and click play again and it should work. However, also due to a Pythonian issue, when running in real time either updating the world-facts in Companions or querying the next direction to face doesn't work. This makes "Play" behavior buggy. Moving one move at a time with the "play once" button seems to work better. However, this may also have Pythonian issues. We then will click the "send-companion-world-state" and "ask-companion-direction-to-face" buttons until the correct options are being returned and then press "play-once" again. 
 
 #3.3. Expected output
 You should expect to see PacPerson travers the game board in NetLogo. PacPerson should be making directional choices based on the state of the world around them. These choices are laid out in greater detail in our companions code, but the high-level order of priority for choosing a direction follows this general progression:

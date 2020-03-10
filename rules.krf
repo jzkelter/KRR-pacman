@@ -1,0 +1,148 @@
+(in-microtheory PacPersonMt)
+(genlMt PacPersonMt QualitativeMechanicsMt)
+
+;;;ONTOLOGY DEFINITIONS
+(isa wall Predicate)
+(arity wall 1)
+(arg1Isa wall 2DNonDiagonal)
+(comment wall "(wall ?direction) says that ?direction is a wall")
+
+(isa ghost Predicate)
+(arity ghost 1)
+(arg1Isa ghost 2DNonDiagonal)
+(comment ghost "(ghost ?direction) says that ?direction has a ghost < 3 steps away")
+
+(isa nearestPellet Predicate)
+(arity nearestPellet 1)
+(arg1Isa nearestPellet 2DNonDiagonal)
+(comment nearestPellet "(nearestPellet ?direction) says that the nearest pellet is at ?direction. If multiple pellets are the same distance away, there will be multiple of these.")
+
+(isa nearestGhost Predicate)
+(arity nearestGhost 1)
+(arg1Isa nearestGhost 2DNonDiagonal)
+(comment nearestGhost "(nearestGhost ?direction) says that the nearest ghost is at ?direction. If multiple ghosts are the same distance away, there will be multiple of these.")
+
+(isa facing Predicate)
+(arity facing 1)
+(arg1Isa facing 2DNonDiagonal)
+(comment facing "(facing ?direction) says that PacPerson is facing ?direction")
+
+(isa directionToFace Predicate)
+(arity directionToFace 1)
+(arg1Isa directionToFace 2DNonDiagonal)
+(comment directionToFace "(directionToFace ?direction) says that PacPerson should next face ?direction")
+
+(isa rule1 Predicate)
+(arity rule1 1)
+(arg1Isa rule1 2DNonDiagonal)
+(comment rule1 "Face direction that is (a) unblocked, (b) has nearestPellet, and (c) nearestGhostFree")
+
+(isa rule2 Predicate)
+(arity rule2 1)
+(arg1Isa rule2 2DNonDiagonal)
+(comment rule2 "If facing direction unblocked --> keep facing direction")
+
+(isa rule3 Predicate)
+(arity rule3 1)
+(arg1Isa rule1 2DNonDiagonal)
+(comment rule3 "If not Rule 1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet")
+
+(isa rule4 Predicate)
+(arity rule4 1)
+(arg1Isa rule4 2DNonDiagonal)
+(comment rule4 "If not Rule 1 and Rule 2 and Rule 3, face direction that is (a) unblocked and (c) nearestGhostFree")
+
+(isa rule5 Predicate)
+(arity rule5 1)
+(arg1Isa rule5 2DNonDiagonal)
+(comment rule5 "If not Rules 1-4, face direction that is (a) unblocked")
+
+(isa nearestGhostFree Predicate)
+(arity nearestGhostFree 1)
+(arg1Isa nearestGhostFree 2DNonDiagonal)
+(comment nearestGhostFree "Returns all directions free of nearest ghosts")
+
+(isa unblocked Predicate)
+(arity unblocked 1)
+(arg1Isa unblocked 2DNonDiagonal)
+(comment unblocked "Returns all directions that are unblocked")
+
+
+;;;;;;;;;HELPERS;;;;
+
+;;;Provides all of the unblocked directions
+(<== (unblocked ?dir)
+		(isa ?dir 2DNonDiagonal)
+		(uninferredSentence (wall ?dir))
+		(uninferredSentence (ghost ?dir))
+)
+
+;;;Provides all of the directions free of nearest ghosts
+(<== (nearestGhostFree ?dir)
+		(isa ?dir 2DNonDiagonal)
+		(uninferredSentence (nearestGhost ?dir))
+)
+
+
+;;;;;;;;;RULES;;;;;;
+
+;;;Rule 1. Face direction that is (a) unblocked, (b) has nearestPellet, and (c) nearestGhostFree
+(<== (rule1 ?dir)
+		(unblocked ?dir)	;;;List of unblocked directions
+		(nearestPellet ?dir)
+		(nearestGhostFree ?dir)
+)
+
+;;;Rule 2. If facing direction unblocked --> keep facing direction
+(<== (rule2 ?dir)
+		(uninferredSentence (rule1 ?dir))
+		(unblocked ?dir)
+		(facing ?dir)		;;;The direction PacPerson is facing
+)
+
+;;;Rule 3. If not Rule 1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet
+(<== (rule3 ?dir)
+		(uninferredSentence (rule1 ?dir))
+		(uninferredSentence (rule2 ?dir))
+		(unblocked ?dir)
+		(nearestPellet ?dir)
+)
+
+;;;Rule 4. If not Rule 1 and Rule 2 and Rule 3, face direction that is (a) unblocked and (c) nearestGhostFree
+(<== (rule4 ?dir)
+		(uninferredSentence (rule1 ?dir))
+		(uninferredSentence (rule2 ?dir))
+		(uninferredSentence (rule3 ?dir))
+		(unblocked ?dir)
+		(nearestGhostFree ?dir)
+)
+
+;;;Rule 5. If not Rules 1-4, face direction that is (a) unblocked
+(<== (rule5 ?dir)
+		(uninferredSentence (rule1 ?dir))
+		(uninferredSentence (rule2 ?dir))
+		(uninferredSentence (rule3 ?dir))
+		(uninferredSentence (rule4 ?dir))
+		(unblocked ?dir)
+)
+
+;;;ENTRY POINT FOR QUERY FROM NETLOGO
+(<== (directionToFace ?dir)
+		(rule1 ?dir)
+)
+(<== (directionToFace ?dir)
+		(rule2 ?dir)
+)
+(<== (directionToFace ?dir)
+		(rule3 ?dir)
+)
+(<== (directionToFace ?dir)
+		(rule4 ?dir)
+)
+(<== (directionToFace ?dir)
+		(rule5 ?dir)
+)
+
+
+
+

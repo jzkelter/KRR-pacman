@@ -1,0 +1,11 @@
+(in-microtheory PacPersonFactsMt)
+(genlMt PacPersonMt PacPersonFactsMt)
+
+;;;Expected output: None
+;;;Results: PASSED
+
+(facing Up)
+(wall Up)
+(wall Down)
+(wall Left)
+(wall Right)

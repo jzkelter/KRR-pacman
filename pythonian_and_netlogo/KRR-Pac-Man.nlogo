@@ -37,7 +37,7 @@ to new  ;; Observer Button
   clear-all
   set level 1
   load-map
-  ; ask ghosts [die]
+  if without-ghosts? [ask ghosts [die]]
   set score 0
   set lives 3
   set extra-lives 0
@@ -86,8 +86,7 @@ end
 
 to play  ;; Observer Forever Button
   ;; Only true at this point if you died and are trying to continue
-  if dead?
-  [ stop ]
+  if dead? [ stop ]
   every (1 - difficulty / 10)
   [ move-pacman ]
   ;every 0.25
@@ -165,7 +164,7 @@ to set-new-heading [dir-to-face]
     dir-to-face = "Right" [ set new-heading 90]
     dir-to-face = "Down" [ set new-heading 180]
     dir-to-face = "Left" [ set new-heading 270]
-   )
+  )
 end
 
 to-report direction
@@ -179,8 +178,7 @@ end
 
 to send-companion-world-state  ;; pacman function
   let facts (list)
-  py:run "a.achieve_on_agent('session-reasoner', '(doForgetKBMt PacPersonFactsMt)')"
-  py:run "a.achieve_on_agent('session-reasoner', '(doClearWorkingMemory)')"
+
   set facts lput (word "(facing " direction) facts  ;; which direction you're facing
 
   ;; Wall facts
@@ -202,37 +200,13 @@ to send-companion-world-state  ;; pacman function
   ;; nearest pellet
   foreach find-nearest-pellet-dirs [dir -> set facts lput  (word "(nearestPellet" dir) facts]
 
-
-  ;; nearest pellet
-;  let nearest-pellets-patches find-nearest-pellets ; pellets with-min [distance myself]
-;  ask nearest-pellets-patches [
-;    ifelse pxcor > my-pxcor
-;    [set facts lput "(nearestPellet Right)" facts]
-;    [set facts lput "(nearestPellet Left)" facts]
-;
-;    ifelse pycor > my-pycor
-;    [set facts lput "(nearestPellet Up)" facts]
-;    [set facts lput "(nearestPellet Down)" facts]
-;  ]
-
-
   ;; nearest ghost
   foreach find-nearest-ghost-dirs [dir -> set facts lput  (word "(nearestGhost" dir) facts]
-;  let nearest-ghost-patches find-nearest-ghosts ;ghosts with [distance myself < 5] with-min [distance myself]
-;  ask nearest-ghost-patches [
-;    (ifelse
-;      pxcor > my-pxcor [set facts lput "(nearestGhost Right)" facts]
-;      pxcor < my-pxcor [set facts lput "(nearestGhost Left)" facts])
-;    (ifelse
-;      pycor > my-pycor [set facts lput "(nearestGhost Up)" facts]
-;      pycor < my-pycor [set facts lput "(nearestGhost Down)" facts])
-;  ]
 
-
-
-  py:set "facts" facts
-  py:run "a.insert_a_microtheory(facts, 'PacPersonFactsMt')"
-  ; py:run "a.achieve_on_agent('session-reasoner', '(doClearWorkingMemory)')"
+  py:set "WORLD_FACTS" facts
+  py:run "a.achieve_on_agent('session-reasoner', '(doForgetKBMt PacPersonFactsMt)')"
+  py:run "a.achieve_on_agent('session-reasoner', '(doClearWorkingMemory)')"
+  py:run "a.insert_a_microtheory(WORLD_FACTS, 'PacPersonFactsMt')"
   output-print facts
 end
 
@@ -243,23 +217,6 @@ end
 to-report find-nearest-ghosts
   report find-nearest-breeds-helper (patch-set) 1 ghosts
 end
-
-;to-report find-nearest-pellet-dirs
-;  let nearest-pellet-dirs (list)
-;  let depth 1
-;  while [empty? nearest-pellet-dirs] [
-;    (foreach [0 90 180 270] ["Up)" "Right)" "Down)" "Left)"]
-;      [[head dir-string] ->
-;        if not wall-at-heading head [
-;          let patches-in-dir nearest-patches-in-dir head depth
-;          if any? patches-in-dir with [any? pellets-here] [set nearest-pellet-dirs lput dir-string nearest-pellet-dirs]
-;        ]
-;      ]
-;    )
-;   set depth depth + 1
-;  ]
-;  report nearest-pellet-dirs
-;end
 
 to-report find-nearest-pellet-dirs
   report find-nearest-breed-directions pellets
@@ -332,20 +289,6 @@ to-report nearest-patches [start-patch depth]
   report near-patches
 end
 
-;to-report nearest-patches [dir depth]
-;  let patches-ahead (patch-set patch-at-heading-and-distance dir 1) ; patch-at-heading-and-distance head 2 patch-at-heading-and-distance head 3)
-;  let my-pxcor  pxcor
-;  let my-pycor pycor
-;  repeat (depth - 1) [
-;    ask patches-ahead [
-;      if pcolor != blue[ ;or pcolor = green [
-;        set patches-ahead (patch-set patches-ahead (neighbors4 with [pcolor != blue and not (pxcor = my-pxcor and pycor = my-pycor)]))
-;       ; set pcolor green
-;      ]
-;    ]
-;  ]
-;  report patches-ahead
-;end
 
 to-report ask-companion-direction-to-face
   ;py:run "a.ask_agent('session-reasoner', '(ist-Information PacPersonMt (directionToFace ?direction))')"
@@ -709,10 +652,10 @@ NIL
 1
 
 BUTTON
-126
-183
-212
-216
+148
+193
+234
+226
 play-once
 play
 NIL
@@ -724,6 +667,17 @@ NIL
 NIL
 NIL
 1
+
+SWITCH
+0
+193
+144
+226
+without-ghosts?
+without-ghosts?
+1
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?

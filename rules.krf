@@ -49,7 +49,7 @@
 
 (isa rule3 Predicate)
 (arity rule3 1)
-(arg1Isa rule1 2DNonDiagonal)
+(arg1Isa rule3 2DNonDiagonal)
 (comment rule3 "If not Rule 1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet")
 
 (isa rule4 Predicate)
@@ -61,6 +61,31 @@
 (arity rule5 1)
 (arg1Isa rule5 2DNonDiagonal)
 (comment rule5 "If not Rules 1-4, face direction that is (a) unblocked")
+
+(isa rule15 Predicate)
+(arity rule15 1)
+(arg1Isa rule15 2DNonDiagonal)
+(comment rule15 "Same as Rule 1 except blocked no longer includes ghosts (because ghosts are edible) and go towards ghosts")
+
+(isa rule25 Predicate)
+(arity rule25 1)
+(arg1Isa rule25 2DNonDiagonal)
+(comment rule25 "Same as Rule 2 except blocked no longer includes ghosts")
+
+(isa rule35 Predicate)
+(arity rule35 1)
+(arg1Isa rule3 2DNonDiagonal)
+(comment rule35 "Same as Rule 3 but with nearestGhost instead of nearestPellet.")
+
+(isa rule45 Predicate)
+(arity rule45 1)
+(arg1Isa rule45 2DNonDiagonal)
+(comment rule45 "same as Rule 4 but with nearestPellet (because we used nearestGhost in 3.5)")
+
+(isa rule55 Predicate)
+(arity rule55 1)
+(arg1Isa rule55 2DNonDiagonal)
+(comment rule55 "Same as Rule 5 but with the blueGhosts versions of the rules.")
 
 (isa nearestGhostFree Predicate)
 (arity nearestGhostFree 1)
@@ -99,12 +124,30 @@
 		(nearestGhostFree ?dir)
 )
 
+;; Rule 1.5. Same as Rule 1 except blocked no longer includes ghosts (because ghosts are edible) and go towards ghosts
+(<== (rule15 ?dir)
+		(blueGhosts)
+		(isa ?dir 2DNonDiagonal)
+		(uninferredSentence (wall ?dir))
+		(nearestPellet ?dir)
+		(nearestGhost ?dir)
+)
+
 ;;;Rule 2. If facing direction unblocked --> keep facing direction
 (<== (rule2 ?dir)
 		(uninferredSentence (blueGhosts))
 		(uninferredSentence (rule1 ?dir))
 		(unblocked ?dir)
 		(facing ?dir)		;;;The direction PacPerson is facing
+)
+
+;; Rule 2.5. Same as Rule 2 except blocked no longer includes ghosts
+(<== (rule25 ?dir)
+		(blueGhosts)
+		(isa ?dir 2DNonDiagonal)
+		(uninferredSentence (rule15 ?dir))
+		(uninferredSentence (wall ?dir))
+		(facing ?dir)
 )
 
 ;;;Rule 3. If not Rule 1 and Rule 2, face direction that is (a) unblocked and (b) has nearestPellet
@@ -155,6 +198,17 @@
 		(uninferredSentence (rule3 ?dir))
 		(uninferredSentence (rule4 ?dir))
 		(unblocked ?dir)
+)
+
+;; Rule 5.5. Same as Rule 5 but with the blueGhosts versions of the rules.
+(<== (rule55 ?dir)
+		(isa ?dir 2DNonDiagonal)
+		(blueGhosts)
+		(uninferredSentence (rule15 ?dir))
+		(uninferredSentence (rule25 ?dir))
+		(uninferredSentence (rule35 ?dir))
+		(uninferredSentence (rule45 ?dir))
+		(uninferredSentence (wall ?dir))
 )
 
 ;;;ENTRY POINT FOR QUERY FROM NETLOGO

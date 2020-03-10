@@ -1,0 +1,10 @@
+(in-microtheory PacPersonFactsMt)
+(genlMt PacPersonMt PacPersonFactsMt)
+
+;;;Expected output: Right
+;;;Results: 
+
+(wall Left)
+(nearestPellet Right)
+(nearestGhost Right)
+(facing Right)

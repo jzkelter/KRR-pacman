@@ -157,6 +157,9 @@ to move-pacman  ;; Observer Procedure
 end
 
 
+
+;;*************************************************
+;;*********** Start written for KRR version**************
 to set-new-heading [dir-to-face]
   print dir-to-face
   (ifelse
@@ -298,6 +301,10 @@ to-report ask-companion-direction-to-face
   output-print py:runresult "a.directions"
   report one-of (py:runresult "a.directions")
 end
+
+;;*************************************************
+;;*********** End written for KRR version**********
+;;*************************************************
 
 
 to consume  ;; Pacman Procedure

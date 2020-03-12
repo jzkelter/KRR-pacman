@@ -126,23 +126,25 @@
 		(unblocked ?dir)
 )
 
+
 ;;;ENTRY POINT FOR QUERY FROM NETLOGO
+
 (<== (directionToFace ?dir)
 		(rule1 ?dir)
 )
+
 (<== (directionToFace ?dir)
 		(rule2 ?dir)
 )
+
 (<== (directionToFace ?dir)
 		(rule3 ?dir)
 )
+
 (<== (directionToFace ?dir)
 		(rule4 ?dir)
 )
+
 (<== (directionToFace ?dir)
 		(rule5 ?dir)
 )
-
-
-
-

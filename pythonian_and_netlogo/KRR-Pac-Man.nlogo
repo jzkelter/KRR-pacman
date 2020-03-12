@@ -157,9 +157,6 @@ to move-pacman  ;; Observer Procedure
 end
 
 
-
-;;*************************************************
-;;*********** Start written for KRR version**************
 to set-new-heading [dir-to-face]
   print dir-to-face
   (ifelse
@@ -201,10 +198,10 @@ to send-companion-world-state  ;; pacman function
 
 
   ;; nearest pellet
-  foreach find-nearest-pellet-dirs [dir -> set facts lput  (word "(nearestPellet" dir) facts]
+  foreach find-nearest-pellet-dirs [dir -> set facts lput  (word "(nearestPellet " dir) facts]
 
   ;; nearest ghost
-  foreach find-nearest-ghost-dirs [dir -> set facts lput  (word "(nearestGhost" dir) facts]
+  foreach find-nearest-ghost-dirs [dir -> set facts lput  (word "(nearestGhost " dir) facts]
 
   py:set "WORLD_FACTS" facts
   py:run "a.achieve_on_agent('session-reasoner', '(doForgetKBMt PacPersonFactsMt)')"
@@ -301,10 +298,6 @@ to-report ask-companion-direction-to-face
   output-print py:runresult "a.directions"
   report one-of (py:runresult "a.directions")
 end
-
-;;*************************************************
-;;*********** End written for KRR version**********
-;;*************************************************
 
 
 to consume  ;; Pacman Procedure
